@@ -37,6 +37,14 @@ export class Lexer {
     return this.input.slice(start, this.position);
   }
 
+  peekChar() {
+    if (this.readPosition >= this.input.length) {
+      return 0;
+    } else {
+      return this.input[this.readPosition];
+    }
+  }
+
   skipWhitespace() {
     while (
       this.ch === " " ||
@@ -53,7 +61,14 @@ export class Lexer {
     this.skipWhitespace();
     switch (this.ch) {
       case "=":
-        token = newToken(TOKEN.ASSIGN, this.ch);
+        if (this.peekChar() === "=") {
+          const ch = this.ch;
+          this.readChar();
+          const literal = ch + this.ch;
+          token = newToken(TOKEN.EQ, literal);
+        } else {
+          token = newToken(TOKEN.ASSIGN, this.ch);
+        }
         break;
       case ";":
         token = newToken(TOKEN.SEMICOLON, this.ch);
@@ -75,6 +90,31 @@ export class Lexer {
         break;
       case "+":
         token = newToken(TOKEN.PLUS, this.ch);
+        break;
+      case "-":
+        token = newToken(TOKEN.MINUS, this.ch);
+        break;
+      case "*":
+        token = newToken(TOKEN.ASTERISK, this.ch);
+        break;
+      case "/":
+        token = newToken(TOKEN.SLASH, this.ch);
+        break;
+      case "!":
+        if (this.peekChar() === "=") {
+          const ch = this.ch;
+          this.readChar();
+          const literal = ch + this.ch;
+          token = newToken(TOKEN.NOT_EQ, literal);
+        } else {
+          token = newToken(TOKEN.BANG, this.ch);
+        }
+        break;
+      case "<":
+        token = newToken(TOKEN.LT, this.ch);
+        break;
+      case ">":
+        token = newToken(TOKEN.GT, this.ch);
         break;
       case "0":
         token = newToken(TOKEN.EOF, "");

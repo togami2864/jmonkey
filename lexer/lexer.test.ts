@@ -76,4 +76,74 @@ let result = add(five, ten)
       expect(token.literal).toBe(tokenLiteral);
     });
   });
+  describe("single line token", () => {
+    const input = `!-/*5;
+5 < 10 > 5;
+if(5 < 10) {
+    return true;
+} else {
+    return false
+};
+    `;
+    const l = new Lexer(input);
+
+    it.each([
+      [TOKEN.BANG, "!"],
+      [TOKEN.MINUS, "-"],
+      [TOKEN.SLASH, "/"],
+      [TOKEN.ASTERISK, "*"],
+      [TOKEN.INT, "5"],
+      [TOKEN.SEMICOLON, ";"],
+      [TOKEN.INT, "5"],
+      [TOKEN.LT, "<"],
+      [TOKEN.INT, "10"],
+      [TOKEN.GT, ">"],
+      [TOKEN.INT, "5"],
+      [TOKEN.SEMICOLON, ";"],
+      [TOKEN.IF, "if"],
+      [TOKEN.LPAREN, "("],
+      [TOKEN.INT, "5"],
+      [TOKEN.LT, "<"],
+      [TOKEN.INT, "10"],
+      [TOKEN.RPAREN, ")"],
+      [TOKEN.LBRACE, "{"],
+      [TOKEN.RETURN, "return"],
+      [TOKEN.TRUE, "true"],
+      [TOKEN.SEMICOLON, ";"],
+      [TOKEN.RBRACE, "}"],
+      [TOKEN.ELSE, "else"],
+      [TOKEN.LBRACE, "{"],
+      [TOKEN.RETURN, "return"],
+      [TOKEN.FALSE, "false"],
+      [TOKEN.RBRACE, "}"],
+      [TOKEN.SEMICOLON, ";"],
+      [TOKEN.EOF, ""],
+    ])("expected Type: '%s' Literal: '%s'", (tokenType, tokenLiteral) => {
+      const token = l.nextToken();
+      expect(token.type).toBe(tokenType);
+      expect(token.literal).toBe(tokenLiteral);
+    });
+  });
+  describe("multi line token", () => {
+    const input = `10 == 10;
+      10 != 9;
+      `;
+    const l = new Lexer(input);
+
+    it.each([
+      [TOKEN.INT, "10"],
+      [TOKEN.EQ, "=="],
+      [TOKEN.INT, "10"],
+      [TOKEN.SEMICOLON, ";"],
+      [TOKEN.INT, "10"],
+      [TOKEN.NOT_EQ, "!="],
+      [TOKEN.INT, "9"],
+      [TOKEN.SEMICOLON, ";"],
+      [TOKEN.EOF, ""],
+    ])("expected Type: '%s' Literal: '%s'", (tokenType, tokenLiteral) => {
+      const token = l.nextToken();
+      expect(token.type).toBe(tokenType);
+      expect(token.literal).toBe(tokenLiteral);
+    });
+  });
 });
