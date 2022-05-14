@@ -1,9 +1,10 @@
-type TokenType = string;
+export type TokenType = string;
 
-interface Token {
+export interface Token {
   type: TokenType;
   literal: string;
 }
+
 export namespace TOKEN {
   export const ILLEGAL = "ILLEGAL";
   export const EOF = "EOF";
@@ -25,3 +26,15 @@ export namespace TOKEN {
   export const FUNCTION = "FUNCTION";
   export const LET = "LET";
 }
+
+export const keywords = new Map([
+  ["fn", TOKEN.FUNCTION],
+  ["let", TOKEN.LET],
+]);
+
+export const lookupIdent = (literal) => {
+  if (keywords.has(literal)) {
+    return keywords.get(literal);
+  }
+  return TOKEN.IDENT;
+};
