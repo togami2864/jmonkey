@@ -5,6 +5,7 @@ import {
   ReturnStatement,
   ExpressionStatement,
   IntegerLiteral,
+  PrefixExpression,
 } from "../ast/ast";
 import { Lexer } from "../lexer/lexer";
 import { TOKEN, Token, TokenType } from "../token/token";
@@ -15,7 +16,7 @@ namespace PRECEDENCE {
   const LESSGREATER = 3;
   const SUM = 4;
   const PRODUCT = 5;
-  const PREFIX = 6;
+  export const PREFIX = 6;
   const CALL = 7;
 }
 
@@ -31,6 +32,8 @@ export class Parser {
 
     this.registerPrefix(TOKEN.IDENT, this.parseIdentifier);
     this.registerPrefix(TOKEN.INT, this.parseIntegerLiteral);
+    this.registerPrefix(TOKEN.BANG, this.parsePrefixExpression);
+    this.registerPrefix(TOKEN.MINUS, this.parsePrefixExpression);
   }
 
   registerPrefix(token, fn) {
@@ -114,6 +117,13 @@ export class Parser {
 
   parseIntegerLiteral() {
     return new IntegerLiteral(this.curToken, Number(this.curToken.literal));
+  }
+
+  parsePrefixExpression() {
+    const exp = new PrefixExpression(this.curToken, this.curToken.literal);
+    this.nextToken();
+    exp.right = this.parseExpression(PRECEDENCE.PREFIX);
+    return exp;
   }
 
   curTokenIs(t: TokenType) {

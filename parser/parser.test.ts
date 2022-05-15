@@ -22,26 +22,23 @@ const testReturnStatement = (s: ReturnStatement, expected) => {
   ).toBe("return");
 };
 
-describe("lexer", () => {
+describe("parser", () => {
   describe("let", () => {
     const input = `let x = 5;
-    let y = 10;
-    let foobar = 838383;
-    `;
+      let y = 10;
+      let foobar = 838383;
+      `;
     const l = new Lexer(input);
     const p = new Parser(l);
-
     const program = p.parseProgram();
     if (program === null) {
       throw new Error("parseProgram returned null");
     }
-
     if (program.statements.length !== 3) {
       throw new Error(
         `program.statements does not contain 3 statements. got=${program.statements.length}`
       );
     }
-
     it.each([
       [0, "x"],
       [1, "y"],
@@ -54,23 +51,20 @@ describe("lexer", () => {
   });
   describe("return", () => {
     const input = `return 5;
-    return 10;
-    return 838383;
-    `;
+      return 10;
+      return 838383;
+      `;
     const l = new Lexer(input);
     const p = new Parser(l);
-
     const program = p.parseProgram();
     if (program === null) {
       throw new Error("parseProgram returned null");
     }
-
     if (program.statements.length !== 3) {
       throw new Error(
         `program.statements does not contain 3 statements. got=${program.statements.length}`
       );
     }
-
     it.each([
       [0, "x"],
       [1, "y"],
@@ -97,7 +91,6 @@ describe("lexer", () => {
       expect(stmt.expression.value).toBe("foobar");
     });
   });
-
   describe("Integer literal expression", () => {
     const input = `5;`;
     const l = new Lexer(input);
@@ -112,6 +105,23 @@ describe("lexer", () => {
       const stmt = program.statements[0];
       // @ts-ignore
       expect(stmt.expression.value).toBe(5);
+    });
+  });
+  describe("Prefix expression", () => {
+    it.each([["!5", "!", 5]])("", (input, ope, value) => {
+      const l = new Lexer(input);
+      const p = new Parser(l);
+      const program = p.parseProgram();
+      if (program.statements.length !== 1) {
+        throw new Error(
+          `program should have one statement, but has ${program.statements.length}`
+        );
+      }
+      const stmt = program.statements[0];
+      // @ts-ignore
+      expect(stmt.expression.operator).toBe(ope);
+      // @ts-ignore
+      expect(stmt.expression.right.value).toBe(value);
     });
   });
 });

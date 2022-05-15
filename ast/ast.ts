@@ -6,7 +6,7 @@ interface Node {
 
 export type Statement = LetStatement | ReturnStatement | ExpressionStatement;
 
-export type Expression = Identifier;
+export type Expression = Identifier | PrefixExpression;
 
 export class Program {
   statements: Statement[];
@@ -55,5 +55,15 @@ export class IntegerLiteral {
   constructor(token, value) {
     this.token = token;
     this.value = value;
+  }
+}
+
+export class PrefixExpression {
+  token: Token;
+  operator: string;
+  right: Expression;
+  constructor(token, op) {
+    this.token = token;
+    this.operator = op;
   }
 }

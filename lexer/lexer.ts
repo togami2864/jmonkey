@@ -13,7 +13,7 @@ export class Lexer {
 
   readChar() {
     if (this.readPosition >= this.input.length) {
-      this.ch = "0";
+      this.ch = "\0";
     } else {
       this.ch = this.input[this.readPosition];
     }
@@ -116,7 +116,7 @@ export class Lexer {
       case ">":
         token = newToken(TOKEN.GT, this.ch);
         break;
-      case "0":
+      case "\0":
         token = newToken(TOKEN.EOF, "");
         break;
       default:
