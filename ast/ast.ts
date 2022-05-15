@@ -4,11 +4,9 @@ interface Node {
   tokenLiteral: string;
 }
 
-export type Statement = LetStatement | ReturnStatement;
+export type Statement = LetStatement | ReturnStatement | ExpressionStatement;
 
-interface Expression {
-  node: Node;
-}
+export type Expression = Identifier;
 
 export class Program {
   statements: Statement[];
@@ -29,6 +27,14 @@ export class LetStatement {
 export class ReturnStatement {
   token: Token;
   returnValue: Expression;
+  constructor(token: Token) {
+    this.token = token;
+  }
+}
+
+export class ExpressionStatement {
+  token: Token;
+  expression: Expression;
   constructor(token: Token) {
     this.token = token;
   }

@@ -2,7 +2,7 @@ import { expect, it, describe } from "vitest";
 import { TOKEN } from "../token/token";
 import { Lexer } from "../lexer/lexer";
 import { Parser } from "./parser";
-import { LetStatement, ReturnStatement } from "../ast/ast";
+import { ExpressionStatement, LetStatement, ReturnStatement } from "../ast/ast";
 
 const testLetStatement = (s: LetStatement, expected) => {
   expect(
@@ -79,6 +79,22 @@ describe("lexer", () => {
       const stmt = program.statements[index];
       //  @ts-ignore
       testReturnStatement(stmt, expectedIdent);
+    });
+  });
+  describe("identifier expression", () => {
+    const input = `foobar;`;
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    if (program.statements.length !== 1) {
+      throw new Error(
+        `program should have one statement, but has ${program.statements.length}`
+      );
+    }
+    it("", () => {
+      const stmt = program.statements[0];
+      // @ts-ignore
+      expect(stmt.expression.value).toBe("foobar");
     });
   });
 });
