@@ -1,7 +1,8 @@
 import { Token, TOKEN } from "../token/token";
 
 interface Node {
-  tokenLiteral: string;
+  tokenLiteral: () => string;
+  string(): () => string;
 }
 
 export type Statement = LetStatement | ReturnStatement | ExpressionStatement;
@@ -13,6 +14,14 @@ export class Program {
   constructor() {
     this.statements = [];
   }
+
+  string() {
+    const buf = [];
+    for (const stmt of this.statements) {
+      buf.push(stmt.string());
+    }
+    return buf.join("");
+  }
 }
 
 export class LetStatement {
@@ -22,6 +31,22 @@ export class LetStatement {
   constructor(token) {
     this.token = token;
   }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    const buf = [];
+    buf.push(this.tokenLiteral() + " ");
+    buf.push(this.name.string());
+    buf.push(" = ");
+    if (this.value !== null) {
+      buf.push(this.value.string());
+    }
+    buf.push(";");
+    return buf.join("");
+  }
 }
 
 export class ReturnStatement {
@@ -30,6 +55,19 @@ export class ReturnStatement {
   constructor(token: Token) {
     this.token = token;
   }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+  string() {
+    const buf = [];
+    buf.push(this.tokenLiteral() + " ");
+    if (this.returnValue !== null) {
+      buf.push(this.returnValue.string());
+    }
+    buf.push(";");
+    return buf.join("");
+  }
 }
 
 export class ExpressionStatement {
@@ -37,6 +75,13 @@ export class ExpressionStatement {
   expression: Expression;
   constructor(token: Token) {
     this.token = token;
+  }
+
+  string() {
+    if (this.expression !== null) {
+      return this.expression.string();
+    }
+    return "";
   }
 }
 
@@ -47,6 +92,13 @@ export class Identifier {
     this.token = token;
     this.value = value;
   }
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    return this.value;
+  }
 }
 
 export class IntegerLiteral {
@@ -55,6 +107,14 @@ export class IntegerLiteral {
   constructor(token, value) {
     this.token = token;
     this.value = value;
+  }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    return this.token.literal;
   }
 }
 
@@ -65,6 +125,19 @@ export class PrefixExpression {
   constructor(token, op) {
     this.token = token;
     this.operator = op;
+  }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    const buf = [];
+    buf.push("(");
+    buf.push(this.operator);
+    buf.push(this.right.string());
+    buf.push(")");
+    return buf.join("");
   }
 }
 
@@ -77,5 +150,19 @@ export class InfixExpression {
     this.token = token;
     this.operator = operator;
     this.left = left;
+  }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    let buf = [];
+    buf.push("(");
+    buf.push(this.left.string());
+    buf.push(" " + this.operator + " ");
+    buf.push(this.right.string());
+    buf.push(")");
+    return buf.join("");
   }
 }

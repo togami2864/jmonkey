@@ -149,7 +149,29 @@ describe("parser", () => {
       // @ts-ignore
       expect(stmt.expression.right.value).toBe(right);
       // @ts-ignore
-      expect(stmt.expression.left.value).toBe(right);
+      expect(stmt.expression.left.value).toBe(left);
+    });
+  });
+  describe("operator precedence", () => {
+    it.each([
+      ["-a * b", "((-a) * b)"],
+      ["!-a", "(!(-a))"],
+      ["a + b + c", "((a + b) + c)"],
+      ["a + b - c", "((a + b) - c)"],
+      ["a * b * c", "((a * b) * c)"],
+      ["a * b / c", "((a * b) / c)"],
+      ["a + b / c", "(a + (b / c))"],
+      ["a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"],
+      ["3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"],
+      ["5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"],
+      ["5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"],
+      ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
+    ])("case %#: %s", (input, expected) => {
+      const l = new Lexer(input);
+      const p = new Parser(l);
+      const program = p.parseProgram();
+      //   @ts-ignore
+      expect(program.string()).toBe(expected);
     });
   });
 });
