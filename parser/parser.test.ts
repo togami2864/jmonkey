@@ -97,4 +97,21 @@ describe("lexer", () => {
       expect(stmt.expression.value).toBe("foobar");
     });
   });
+
+  describe("Integer literal expression", () => {
+    const input = `5;`;
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    if (program.statements.length !== 1) {
+      throw new Error(
+        `program should have one statement, but has ${program.statements.length}`
+      );
+    }
+    it("", () => {
+      const stmt = program.statements[0];
+      // @ts-ignore
+      expect(stmt.expression.value).toBe(5);
+    });
+  });
 });

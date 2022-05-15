@@ -48,3 +48,12 @@ export class Identifier {
     this.value = value;
   }
 }
+
+export class IntegerLiteral {
+  token: Token;
+  value: number;
+  constructor(token, value) {
+    this.token = token;
+    this.value = value;
+  }
+}

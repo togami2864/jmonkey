@@ -4,6 +4,7 @@ import {
   Program,
   ReturnStatement,
   ExpressionStatement,
+  IntegerLiteral,
 } from "../ast/ast";
 import { Lexer } from "../lexer/lexer";
 import { TOKEN, Token, TokenType } from "../token/token";
@@ -29,6 +30,7 @@ export class Parser {
     this.nextToken();
 
     this.registerPrefix(TOKEN.IDENT, this.parseIdentifier);
+    this.registerPrefix(TOKEN.INT, this.parseIntegerLiteral);
   }
 
   registerPrefix(token, fn) {
@@ -108,6 +110,10 @@ export class Parser {
 
   parseIdentifier() {
     return new Identifier(this.curToken, this.curToken.literal);
+  }
+
+  parseIntegerLiteral() {
+    return new IntegerLiteral(this.curToken, Number(this.curToken.literal));
   }
 
   curTokenIs(t: TokenType) {
