@@ -67,3 +67,15 @@ export class PrefixExpression {
     this.operator = op;
   }
 }
+
+export class InfixExpression {
+  token: Token;
+  operator: string;
+  left: Expression;
+  right: Expression;
+  constructor(token: Token, operator: string, left: Expression) {
+    this.token = token;
+    this.operator = operator;
+    this.left = left;
+  }
+}

@@ -101,7 +101,7 @@ describe("parser", () => {
         `program should have one statement, but has ${program.statements.length}`
       );
     }
-    it("", () => {
+    it("basic", () => {
       const stmt = program.statements[0];
       // @ts-ignore
       expect(stmt.expression.value).toBe(5);
@@ -122,6 +122,34 @@ describe("parser", () => {
       expect(stmt.expression.operator).toBe(ope);
       // @ts-ignore
       expect(stmt.expression.right.value).toBe(value);
+    });
+  });
+  describe("Infix expression", () => {
+    it.each([
+      ["5 + 5;", 5, "+", 5],
+      ["5 - 5;", 5, "-", 5],
+      ["5 * 5;", 5, "*", 5],
+      ["5 / 5;", 5, "/", 5],
+      ["5 > 5;", 5, ">", 5],
+      ["5 < 5;", 5, "<", 5],
+      ["5 == 5;", 5, "==", 5],
+      ["5 != 5;", 5, "!=", 5],
+    ])("%s", (input, left, ope, right) => {
+      const l = new Lexer(input);
+      const p = new Parser(l);
+      const program = p.parseProgram();
+      if (program.statements.length !== 1) {
+        throw new Error(
+          `program should have one statement, but has ${program.statements.length}`
+        );
+      }
+      const stmt = program.statements[0];
+      // @ts-ignore
+      expect(stmt.expression.operator).toBe(ope);
+      // @ts-ignore
+      expect(stmt.expression.right.value).toBe(right);
+      // @ts-ignore
+      expect(stmt.expression.left.value).toBe(right);
     });
   });
 });
