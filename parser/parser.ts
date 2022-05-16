@@ -49,6 +49,10 @@ export class Parser {
     this.registerPrefix(TOKEN.INT, this.parseIntegerLiteral);
     this.registerPrefix(TOKEN.BANG, this.parsePrefixExpression);
     this.registerPrefix(TOKEN.MINUS, this.parsePrefixExpression);
+    this.registerPrefix(TOKEN.TRUE, this.parseBool);
+    this.registerPrefix(TOKEN.FALSE, this.parseBool);
+    this.registerPrefix(TOKEN.LPAREN, this.parseGroupExpression);
+
     this.registerInfix(TOKEN.PLUS, this.parseInfixExpression);
     this.registerInfix(TOKEN.MINUS, this.parseInfixExpression);
     this.registerInfix(TOKEN.SLASH, this.parseInfixExpression);
@@ -57,8 +61,6 @@ export class Parser {
     this.registerInfix(TOKEN.NOT_EQ, this.parseInfixExpression);
     this.registerInfix(TOKEN.LT, this.parseInfixExpression);
     this.registerInfix(TOKEN.GT, this.parseInfixExpression);
-    this.registerPrefix(TOKEN.TRUE, this.parseBool);
-    this.registerPrefix(TOKEN.FALSE, this.parseBool);
   }
 
   registerPrefix(token, fn) {
@@ -161,6 +163,16 @@ export class Parser {
 
   parseBool() {
     return new Boolean(this.curToken, this.curTokenIs(TOKEN.TRUE));
+  }
+
+  parseGroupExpression() {
+    this.nextToken();
+    const exp = this.parseExpression(PRECEDENCE.LOWEST);
+
+    if (!this.expectPeek(TOKEN.RPAREN)) {
+      return null;
+    }
+    return exp;
   }
 
   parsePrefixExpression() {

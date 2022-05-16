@@ -108,7 +108,11 @@ describe("parser", () => {
     });
   });
   describe("Prefix expression", () => {
-    it.each([["!5", "!", 5]])("", (input, ope, value) => {
+    it.each([
+      ["!5", "!", 5],
+      ["!true", "!", true],
+      ["!false", "!", false],
+    ])("", (input, ope, value) => {
       const l = new Lexer(input);
       const p = new Parser(l);
       const program = p.parseProgram();
@@ -134,6 +138,9 @@ describe("parser", () => {
       ["5 < 5;", 5, "<", 5],
       ["5 == 5;", 5, "==", 5],
       ["5 != 5;", 5, "!=", 5],
+      ["true == true", true, "==", true],
+      ["true != false", true, "!=", false],
+      ["false == false", false, "==", false],
     ])("%s", (input, left, ope, right) => {
       const l = new Lexer(input);
       const p = new Parser(l);
@@ -166,6 +173,11 @@ describe("parser", () => {
       ["5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"],
       ["5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"],
       ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
+      ["1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"],
+      ["(5 + 5) * 2", "((5 + 5) * 2)"],
+      ["2 / (5 + 5)", "(2 / (5 + 5))"],
+      ["-(5 + 5)", "(-(5 + 5))"],
+      ["!(true == true)", "(!(true == true))"],
       ["true", "true"],
       ["false", "false"],
     ])("case %#: %s", (input, expected) => {
