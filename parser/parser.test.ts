@@ -188,4 +188,23 @@ describe("parser", () => {
       expect(program.string()).toBe(expected);
     });
   });
+  describe("if expression", () => {
+    const input = `if(x < y){ x } else { y }`;
+    const l = new Lexer(input);
+    const p = new Parser(l);
+    const program = p.parseProgram();
+    if (program === null) {
+      throw new Error("parseProgram returned null");
+    }
+    if (program.statements.length !== 1) {
+      throw new Error(
+        `program.statements does not contain 1 statements. got=${program.statements.length}`
+      );
+    }
+    it("basic case", () => {
+      const stmt = program.statements[0];
+      // @ts-ignore
+      expect(stmt.expression.consequence.statements.length).toBe(1);
+    });
+  });
 });

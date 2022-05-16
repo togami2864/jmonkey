@@ -9,6 +9,8 @@ import {
   InfixExpression,
   Expression,
   Boolean,
+  IfExpression,
+  BlockStatement,
 } from "../ast/ast";
 import { Lexer } from "../lexer/lexer";
 import { TOKEN, Token, TokenType } from "../token/token";
@@ -52,6 +54,7 @@ export class Parser {
     this.registerPrefix(TOKEN.TRUE, this.parseBool);
     this.registerPrefix(TOKEN.FALSE, this.parseBool);
     this.registerPrefix(TOKEN.LPAREN, this.parseGroupExpression);
+    this.registerPrefix(TOKEN.IF, this.parseIfExpression);
 
     this.registerInfix(TOKEN.PLUS, this.parseInfixExpression);
     this.registerInfix(TOKEN.MINUS, this.parseInfixExpression);
@@ -171,6 +174,51 @@ export class Parser {
 
     if (!this.expectPeek(TOKEN.RPAREN)) {
       return null;
+    }
+    return exp;
+  }
+
+  parseBlockStatement() {
+    const block = new BlockStatement(this.curToken);
+    block.statements = [];
+    this.nextToken();
+
+    while (!this.curTokenIs(TOKEN.RBRACE) && !this.curTokenIs(TOKEN.EOF)) {
+      const stmt = this.parseStatement();
+      if (stmt) {
+        block.statements.push(stmt);
+      }
+      this.nextToken();
+    }
+    return block;
+  }
+
+  parseIfExpression() {
+    const exp = new IfExpression(this.curToken);
+    if (!this.expectPeek(TOKEN.LPAREN)) {
+      return null;
+    }
+    this.nextToken();
+    const condition = this.parseExpression(PRECEDENCE.LOWEST);
+    exp.condition = condition;
+
+    if (!this.expectPeek(TOKEN.RPAREN)) {
+      return null;
+    }
+    if (!this.expectPeek(TOKEN.LBRACE)) {
+      return null;
+    }
+
+    const consequence = this.parseBlockStatement();
+    exp.consequence = consequence;
+
+    if (this.peekTokenIs(TOKEN.ELSE)) {
+      this.nextToken();
+      if (!this.expectPeek(TOKEN.LBRACE)) {
+        return null;
+      }
+      const alter = this.parseBlockStatement();
+      exp.alternative = alter;
     }
     return exp;
   }

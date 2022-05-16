@@ -183,3 +183,53 @@ export class Boolean {
     return this.token.literal;
   }
 }
+
+export class IfExpression {
+  token: Token;
+  condition: Expression;
+  consequence: BlockStatement;
+  alternative: BlockStatement;
+
+  constructor(token) {
+    this.token = token;
+  }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    const buf = [];
+    buf.push("if");
+    buf.push(this.condition.string());
+    buf.push(" ");
+    buf.push(this.consequence.string());
+
+    if (this.alternative) {
+      buf.push("else ");
+      buf.push(this.alternative.string());
+    }
+
+    return buf.join("");
+  }
+}
+
+export class BlockStatement {
+  token: Token;
+  statements: Statement[];
+  constructor(token) {
+    this.token = token;
+  }
+
+  tokenLiteral() {
+    this.token.literal;
+  }
+
+  string() {
+    const buf = [];
+    for (const stmt of this.statements) {
+      buf.push(stmt.string());
+    }
+    return buf.join("");
+  }
+}
