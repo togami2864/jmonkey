@@ -166,3 +166,20 @@ export class InfixExpression {
     return buf.join("");
   }
 }
+
+export class Boolean {
+  token: Token;
+  value: boolean;
+  constructor(token, value) {
+    this.token = token;
+    this.value = value;
+  }
+
+  tokenLiteral() {
+    return this.token.literal;
+  }
+
+  string() {
+    return this.token.literal;
+  }
+}

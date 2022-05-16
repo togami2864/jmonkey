@@ -8,6 +8,7 @@ import {
   PrefixExpression,
   InfixExpression,
   Expression,
+  Boolean,
 } from "../ast/ast";
 import { Lexer } from "../lexer/lexer";
 import { TOKEN, Token, TokenType } from "../token/token";
@@ -56,6 +57,8 @@ export class Parser {
     this.registerInfix(TOKEN.NOT_EQ, this.parseInfixExpression);
     this.registerInfix(TOKEN.LT, this.parseInfixExpression);
     this.registerInfix(TOKEN.GT, this.parseInfixExpression);
+    this.registerPrefix(TOKEN.TRUE, this.parseBool);
+    this.registerPrefix(TOKEN.FALSE, this.parseBool);
   }
 
   registerPrefix(token, fn) {
@@ -154,6 +157,10 @@ export class Parser {
 
   parseIntegerLiteral() {
     return new IntegerLiteral(this.curToken, Number(this.curToken.literal));
+  }
+
+  parseBool() {
+    return new Boolean(this.curToken, this.curTokenIs(TOKEN.TRUE));
   }
 
   parsePrefixExpression() {

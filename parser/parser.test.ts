@@ -166,6 +166,8 @@ describe("parser", () => {
       ["5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"],
       ["5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"],
       ["3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"],
+      ["true", "true"],
+      ["false", "false"],
     ])("case %#: %s", (input, expected) => {
       const l = new Lexer(input);
       const p = new Parser(l);
